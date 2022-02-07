@@ -7,6 +7,7 @@ Created on Mon Jan 31 17:06:42 2022
 import streamlit as st
 import numpy as np
 import pandas as pd
+import csv
 import plotly.graph_objects as go
 
 ## Extraindo dados da web
@@ -25,7 +26,7 @@ def get_stock_data(ticker):
     
     # selecionado a data do horizonte de busca de 5 anos 
     date2 = np.timedelta64(np.datetime64('today') - np.datetime64('1969-12-31'), 's').astype(int)
-    date1 = date2 - 86400 * 365 * 10
+    date1 = date2 - 86400 * 365 * 5
     # date1 = 0
     
     url = "https://br.financas.yahoo.com/quote/{}/history?period1={}&period2={}&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true"
@@ -171,7 +172,7 @@ def get_parameter(ticker, flag):
         params['M. Líquida'] = df_param.loc[df_param['Indicador'].isin(['M. Líquida']), "Valor"].item()
         params['CAGR Receitas 5 anos'] = df_param.loc[df_param['Indicador'].isin(['CAGR Receitas 5 anos']), "Valor"].item()
         params['P/L'] = df_param.loc[df_param['Indicador'].isin(['P/L']), "Valor"].item()
-    else:
+    else: #fundo
         url_FII = 'https://www.fundsexplorer.com.br/ranking'
         lendo_url = requests.get(url_FII, headers = headers)
         
@@ -227,22 +228,35 @@ def get_parameter(ticker, flag):
     
     return params  
 
+@st.cache(allow_output_mutation=True, show_spinner=False)
+def read_csv_file(file_path):
+    output_list = []
+    
+    with open(file_path, mode='r', newline='\n') as csv_file:
+        # Cria o ponteiro para a escrita do arquivo
+        reader = csv.reader(csv_file)
+        
+        # Transfere as linhas para a lista
+        for line in reader:
+            output_list.append(line)
+    
+    return output_list
+
 # Iniciando o Dash
 st.title('Dashboard Financeiro')
 
-# Qual é melhor de usar selectbox ou text_input?
-options  = ('SULA11','XPLG11','GOLL3')
-st.selectbox("Símbolo da empresa:", options ,key='name')
-flag_fundo = st.session_state.name in ['XPLG11']
-# st.session_state.name
+options = tuple([element[1] + " (" + element[0] + ")" for element in read_csv_file("empresas_listadas.csv")])
 
-# st.text_input("Símbolo da empresa:", key="name")
-# st.session_state.name
+st.selectbox("Símbolo da empresa ou fundo:", options ,key='name')
+
+ticker = st.session_state.name.split(" ")[0]
+
+flag_fundo = ticker in ['XPLG11'] #verificar se está na lista de fundos
 
 # Pegando dados históricos do site do Yahoo
 try:
-    with st.spinner('Carregando dados, aguarde, por favor!'):
-        dataframe = get_stock_data(st.session_state.name)
+    with st.spinner('Carregando dados. Aguarde, por favor!'):
+        dataframe = get_stock_data(ticker)
 except Exception:
     print("Erro na raspagem do Yahoo")
 
@@ -285,19 +299,23 @@ try:
     col1.plotly_chart(fig, use_container_width=True) #desenha o gráfico na página
     
     stock_price = "R$ " + str(dataframe_aux['Fechamento ajustado**'][0]).replace('.', ',')
-    #delta = 
+    delta_price = str(round(100 * ((dataframe_aux['Fechamento ajustado**'][0] - dataframe_aux['Fechamento ajustado**'][-1]) \
+                             / dataframe_aux['Fechamento ajustado**'][-1]), 2)).replace('.', ',') + "%" 
     
     col2.metric(" ", "", "") #espaço
     col2.metric("", "", "")  #espaço
-    col2.metric("Teste:", stock_price, "+2%")
     col2.metric(" ", "", "") #espaço
     col2.metric("", "", "")  #espaço
-    col2.metric("Teste:", "R$ 20,00", "-2%")
+    col2.metric("Preço:", stock_price, delta_price)
+    # col2.metric(" ", "", "") #espaço
+    # col2.metric("", "", "")  #espaço
+    # col2.metric("Teste:", "R$ 20,00", "-2%")
 except Exception:
     st.write("Não foi possível localizar o ativo")
 
 try:
-    param = get_parameter(st.session_state.name, flag_fundo)
+    print(ticker)
+    param = get_parameter(ticker, flag_fundo)
 except Exception:
     param = {}
 
@@ -313,13 +331,13 @@ except Exception:
 
 try:
     if not flag_fundo: 
-        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("ROE:", param["ROE"], "")
         col2.metric("ROIC:", param["ROIC"], "")    
-        col3.metric("Liquidez:", param["Liq. corrente"], "")
-        col4.metric("M. Líquida:", param["M. Líquida"], "")
-        col5.metric("CAGR:", param["CAGR Receitas 5 anos"], "")
-        col6.metric("P/L:", param["P/L"], "")
+        # col3.metric("Liquidez:", param["Liq. corrente"], "")
+        col3.metric("M. Líquida:", param["M. Líquida"], "")
+        col4.metric("CAGR:", param["CAGR Receitas 5 anos"], "")
+        col5.metric("P/L:", param["P/L"], "")
     else:
         col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("DY 12 M:", param["DY 12 M"], "")    
