@@ -226,7 +226,7 @@ def get_parameter(ticker, flag):
         params['Magic Number'] = str(round(float(df_param['Preço atual'][ticker].replace('R$ ','').replace(',','.')) / 
                                            float(df_param['Dividendo'][ticker].replace('R$ ','').replace(',','.')), 2)).replace('.',',')
     
-    return params  
+    return params
 
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def read_csv_file(file_path):
@@ -247,7 +247,7 @@ st.title('Dashboard Financeiro')
 
 options = tuple([element[1] + " (" + element[0] + ")" for element in read_csv_file("empresas_listadas.csv")])
 
-st.selectbox("Símbolo da empresa ou fundo:", options ,key='name')
+st.selectbox("Símbolo da empresa ou fundo:", options, key='name')
 
 ticker = st.session_state.name.split(" ")[0]
 
