@@ -19,6 +19,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
+
+
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def get_stock_data(ticker):
     # Ajuste do url
@@ -223,8 +225,9 @@ def get_parameter(ticker, flag):
         params['Vacância Financeira'] = df_param['Vacância Financeira'][ticker]
         params['P/VPA'] = df_param['P/VPA'][ticker] 
         params['Dividendo'] = df_param['Dividendo'][ticker]
-        params['Magic Number'] = str(round(float(df_param['Preço atual'][ticker].replace('R$ ','').replace(',','.')) / 
-                                           float(df_param['Dividendo'][ticker].replace('R$ ','').replace(',','.')), 2)).replace('.',',')
+        den = float(df_param['Dividendo'][ticker].replace('R$ ','').replace(',','.'))
+        num = float(df_param['Preço atual'][ticker].replace('R$ ','').replace(',','.'))
+        params['Magic Number'] = str(round(num/den, 2)).replace('.',',') if den != 0.0 else 'N/A'
     
     return params
 
@@ -242,16 +245,51 @@ def read_csv_file(file_path):
     
     return output_list
 
+@st.cache(allow_output_mutation=(True), show_spinner=False)
+def get_asset_field(ticker, flag, df_fiis, df_stocks): 
+    # Verificando o tipo de ativo
+    if flag:
+        return df_fiis[df_fiis['Sigla'] == ticker]['Setor'].item()
+    else:
+        return df_stocks[df_stocks['Sigla'] == ticker]['Setor'].item()
+
 # Iniciando o Dash
+st.set_page_config(layout="wide")
+
+# Fazendo a leitura dos tickers das ações 
+columns = ['Empresa', 'Sigla','Setor']
+df_stocks = pd.DataFrame(read_csv_file("empresas_listadas.csv"), columns=columns) 
+
+# Fazendo a leitura dos tickers dos fundos imobiliários 
+columns = ['Sigla','Setor']
+df_fiis = pd.DataFrame(read_csv_file("fundos_listados.csv"), columns=columns) 
+
+# Ajustando as listas com os nomes das empresas e fundos
+list_stocks = df_stocks[['Empresa','Sigla']].values.tolist()
+list_fiis = df_fiis['Sigla'].values.tolist()
+
+# Ajustando as opções para o selectbox
+options = [e[1] + " (" + e[0] + ")" for e in list_stocks] #inserindo lista de ações
+options = options + list_fiis #inserindo a lista de fiis
+options.sort()
+
 st.title('Dashboard Financeiro')
 
-options = tuple([element[1] + " (" + element[0] + ")" for element in read_csv_file("empresas_listadas.csv")])
+st.sidebar.selectbox("Selecione o símbolo da empresa ou fundo:", options, key='name')
 
-st.selectbox("Símbolo da empresa ou fundo:", options, key='name')
+# st.sidebar.subheader('Selecione a filtragem de ativo')
+
+st.sidebar.selectbox("Selecione a filtragem de ativo:", options=("Ações", "FIIs", None), index=2)
+
+st.sidebar.selectbox("Selecione a filtragem por setor:", disabled=True, options=('Setor'))
+
 
 ticker = st.session_state.name.split(" ")[0]
 
-flag_fundo = ticker in ['XPLG11'] #verificar se está na lista de fundos
+# Flag para verificar se está é um fundo ou uma ação selecionada
+if_fund = ticker in list_fiis 
+
+st.header(ticker + ' - Setor ' + get_asset_field(ticker, if_fund, df_fiis, df_stocks))
 
 # Pegando dados históricos do site do Yahoo
 try:
@@ -296,6 +334,7 @@ try:
                     low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*'])])
     
     fig.update_layout(xaxis_rangeslider_visible=False) #retira a tabela abaixo
+    # fig.update_layout(width=1000, height=500) 
     col1.plotly_chart(fig, use_container_width=True) #desenha o gráfico na página
     
     stock_price = "R$ " + str(dataframe_aux['Fechamento ajustado**'][0]).replace('.', ',')
@@ -314,8 +353,7 @@ except Exception:
     st.write("Não foi possível localizar o ativo")
 
 try:
-    print(ticker)
-    param = get_parameter(ticker, flag_fundo)
+    param = get_parameter(ticker, if_fund)
 except Exception:
     param = {}
 
@@ -330,7 +368,7 @@ except Exception:
 # st.markdown('<p class="big-font">Hello World !!</p>', unsafe_allow_html=True)
 
 try:
-    if not flag_fundo: 
+    if not if_fund: 
         col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("ROE:", param["ROE"], "")
         col2.metric("ROIC:", param["ROIC"], "")    
@@ -339,6 +377,7 @@ try:
         col4.metric("CAGR:", param["CAGR Receitas 5 anos"], "")
         col5.metric("P/L:", param["P/L"], "")
     else:
+        print(param["DY 12 M"])
         col1, col2, col3, col4, col5 = st.columns(5)
         col1.metric("DY 12 M:", param["DY 12 M"], "")    
         col2.metric("Liquidez:", param["Vacância Financeira"], "")
@@ -346,6 +385,7 @@ try:
         col4.metric("Dividendo:", param["Dividendo"], "")
         col5.metric("Magic N.:", param["Magic Number"], "")
 except Exception:
+    print('Problema na exibição dos indicadores')
     pass
 
 # dataframe[dataframe['Código do fundo'] == 'sbroule']["valor"]
