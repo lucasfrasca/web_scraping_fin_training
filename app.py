@@ -44,7 +44,7 @@ def get_stock_data(ticker):
     
     driver.get(url)
     
-    time.sleep(5)
+    time.sleep(4)
     
     html = driver.find_element(By.TAG_NAME, 'html')
     
@@ -61,7 +61,7 @@ def get_stock_data(ticker):
     
         # atualiza a posição do scroll 
         new_height = driver.execute_script("return document.documentElement.scrollHeight")
-        print("new_height: {}".format(new_height))
+        # print("new_height: {}".format(new_height))
         
         # verifica se houve movimento da página 
         if (new_height == last_height):
@@ -100,7 +100,7 @@ def get_stock_data(ticker):
     
     df_data_stocks = pd.DataFrame(stock_data[1:], columns=stock_data[0][0:7]) 
     
-    df_not_related = pd.DataFrame(tuplas_eventos, columns=['Data', 'Valor', 'Tipo'])
+    # df_not_related = pd.DataFrame(tuplas_eventos, columns=['Data', 'Valor', 'Tipo'])
     
     # Tratando o DataFrame de preços de ações 
     # converte a última coluna para inteiro substituindo o ponto
@@ -108,7 +108,7 @@ def get_stock_data(ticker):
     
     # laço para substituir os pontos por vírgulas 
     for coluna in df_data_stocks.columns[1:6]:
-        df_data_stocks[coluna] = df_data_stocks[coluna].apply(lambda x: float(x.replace(",",".")) if x != '-' else x)
+        df_data_stocks[coluna] = df_data_stocks[coluna].apply(lambda x: float(x.replace(".","").replace(",",".")) if x != '-' else 0)
     
     # dicionário para auxiliar na correção das datas
     dicio = {"jan.": "01",
@@ -253,6 +253,54 @@ def get_asset_field(ticker, flag, df_fiis, df_stocks):
     else:
         return df_stocks[df_stocks['Sigla'] == ticker]['Setor'].item()
 
+@st.cache(allow_output_mutation=(True), show_spinner=False)
+def get_list_asset_field(type_filter, df_fiis, df_stocks): 
+    # Verifica o tipo de ativo selecionado
+    if type_filter == "FIIs":
+        return pd.unique(df_fiis['Setor']).tolist()
+    elif type_filter == "Ações":
+        return pd.unique(df_stocks['Setor']).tolist()
+    else:
+        return ["Todos"]
+
+@st.cache(allow_output_mutation=(True), show_spinner=False)
+def define_options(asset_type, asset_field, df_fiis, df_stocks):
+    # Inicializando variáveis 
+    list_stocks = []
+    list_fiis = []
+    
+    # Verificando se é ação ou fundo
+    if asset_type == "FIIs":
+        if asset_field != "Todos":
+            # caso seja um grupo específico
+            df_temp = df_fiis.groupby(by='Setor')['Sigla'].get_group(asset_field)
+        else:
+            # caso sejam desejados todos os grupos
+            df_temp = df_fiis['Sigla']
+        list_fiis = df_temp.values.tolist()
+    elif asset_type == "Ações":
+        # Verificando o grupo do ativo
+        if asset_field != "Todos":
+            # caso seja um grupo específico
+            # df_temp = df_stocks[df_stocks['Setor'] == asset_field][['Empresa', 'Sigla']]
+            df_temp = df_stocks.groupby(by='Setor')[['Empresa','Sigla']].get_group(asset_field)
+        else:
+            # caso sejam desejados todos os grupos
+            df_temp = df_stocks[['Empresa', 'Sigla']]
+        list_stocks = df_temp.values.tolist()
+    else:
+        list_fiis = df_fiis['Sigla'].values.tolist()
+        list_stocks = df_stocks[['Empresa','Sigla']].values.tolist()
+    
+    # Ajustando as opções para a saída 
+    # inserindo lista de ações caso ela não seja nula
+    options = [e[1] + " (" + e[0] + ")" for e in list_stocks] if bool(list_stocks) else [] 
+    # concatenando a lista de fiis se ela não for nula
+    options = options + list_fiis if bool(list_fiis) else options 
+    options.sort() #ordenando tudo
+    
+    return options
+
 # Iniciando o Dash
 st.set_page_config(layout="wide")
 
@@ -268,25 +316,68 @@ df_fiis = pd.DataFrame(read_csv_file("fundos_listados.csv"), columns=columns)
 list_stocks = df_stocks[['Empresa','Sigla']].values.tolist()
 list_fiis = df_fiis['Sigla'].values.tolist()
 
-# Ajustando as opções para o selectbox
-options = [e[1] + " (" + e[0] + ")" for e in list_stocks] #inserindo lista de ações
-options = options + list_fiis #inserindo a lista de fiis
-options.sort()
-
 st.title('Dashboard Financeiro')
 
-st.sidebar.selectbox("Selecione o símbolo da empresa ou fundo:", options, key='name')
+# Mudando a CSS da barra lateral e dos labels dos objetos selectbox
+st.markdown(
+    """
+    <style>
+    [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
+        width: 300px;
+    }
+    [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
+        width: 300px;
+        margin-left: -300px;
+    }
+    [class="css-16huue1 effi0qh0"] {
+        font-size:18px !important;
+    }
+    [class="css-3snfz0 effi0qh0"] {
+        font-size:18px !important;
+    }
+    [class="block-container css-18e3th9 egzxvld2"] {
+        padding-top:40px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-# st.sidebar.subheader('Selecione a filtragem de ativo')
+st.sidebar.header('Filtragem de dados')
 
-st.sidebar.selectbox("Selecione a filtragem de ativo:", options=("Ações", "FIIs", None), index=2)
+########################### Filtro de tipo de ativo ###########################
+st.sidebar.selectbox("Selecione o tipo de ativo:",
+                     options=('Todos',"Ações", "FIIs"),
+                     key='type_filter',
+                     index=0,
+                     disabled=False)
 
-st.sidebar.selectbox("Selecione a filtragem por setor:", disabled=True, options=('Setor'))
+########################## Filtro de setor de ativo ###########################
+is_type_filter_off = True if st.session_state.type_filter =='Todos' else False
+options = ['Todos'] + get_list_asset_field(st.session_state.type_filter,
+                                           df_fiis,
+                                           df_stocks)
 
+st.sidebar.selectbox('Selecione o setor do ativo:',
+                      options=options,
+                      key='field_filter',
+                      index=0,
+                      disabled=is_type_filter_off)
 
-ticker = st.session_state.name.split(" ")[0]
+########################## Filtro de seleção de ativo #########################
+options = define_options(st.session_state.type_filter,
+                         st.session_state.field_filter,
+                         df_fiis,
+                         df_stocks)
 
-# Flag para verificar se está é um fundo ou uma ação selecionada
+st.sidebar.selectbox("Selecione o símbolo do ativo:",
+                     options=options, 
+                     key='ticker_filter')
+
+# Corrigindo o string retornado pelo filtro de seleção 
+ticker = st.session_state.ticker_filter.split(" ")[0]
+
+# Flag para verificar se foi selecionada um fundo ou uma ação 
 if_fund = ticker in list_fiis 
 
 st.header(ticker + ' - Setor ' + get_asset_field(ticker, if_fund, df_fiis, df_stocks))
@@ -298,7 +389,7 @@ try:
 except Exception:
     print("Erro na raspagem do Yahoo")
 
-# Tentando escrever o range de datas para o slider
+# Escrevendo o range de datas para o slider
 try:
     # Pega o índice do dataframe e transforma em uma lista para opções
     options = [e.strftime(' %d/%m/%Y ') for e in dataframe.index.to_list()[::-1]]
@@ -315,7 +406,8 @@ date_init, date_fin = st.select_slider('Selecione a data de pesquisa',
                                         value=(options[0],
                                                options[-1]),
                                         disabled=sldr_enabl)
-# Insere o gráfico na página 
+
+# Insere o gráfico na página e o indicador de preço 
 try:
     col1, col2 = st.columns([3,1])
     # Nome da empresa selecionada pelo ticker
@@ -331,7 +423,8 @@ try:
     # Monta a figura
     fig = go.Figure(data=[go.Candlestick(x=dataframe_aux.index,
                     open=dataframe_aux['Abrir'], high=dataframe_aux['Alto'],
-                    low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*'])])
+                    low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*'])],
+                    layout_yaxis_range=[0, dataframe_aux['Alto'].max()])
     
     fig.update_layout(xaxis_rangeslider_visible=False) #retira a tabela abaixo
     # fig.update_layout(width=1000, height=500) 
@@ -350,22 +443,12 @@ try:
     # col2.metric("", "", "")  #espaço
     # col2.metric("Teste:", "R$ 20,00", "-2%")
 except Exception:
-    st.write("Não foi possível localizar o ativo")
+    st.write("Não foi possível exibir o gráfico do ativo")
 
 try:
     param = get_parameter(ticker, if_fund)
 except Exception:
     param = {}
-
-# st.markdown("""
-# <style>
-# .big-font {
-#     font-size:30px !important;
-# }
-# </style>
-# """, unsafe_allow_html=True)
-
-# st.markdown('<p class="big-font">Hello World !!</p>', unsafe_allow_html=True)
 
 try:
     if not if_fund: 
@@ -383,13 +466,10 @@ try:
         col2.metric("Liquidez:", param["Vacância Financeira"], "")
         col3.metric("P/VPA:", param["P/VPA"], "")
         col4.metric("Dividendo:", param["Dividendo"], "")
-        col5.metric("Magic N.:", param["Magic Number"], "")
+        col5.metric("Magic Number:", param["Magic Number"], "")
 except Exception:
     print('Problema na exibição dos indicadores')
     pass
-
-# dataframe[dataframe['Código do fundo'] == 'sbroule']["valor"]
-# dataframe.loc[dataframe["Código do produto"] == "sbrouble", 'valor']
 
 
 
