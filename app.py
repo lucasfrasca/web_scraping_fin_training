@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import csv
 import plotly.graph_objects as go
+from PIL import Image
 
 ## Extraindo dados da web
 import time
@@ -29,17 +30,16 @@ def get_stock_data(ticker):
     # selecionado a data do horizonte de busca de 5 anos 
     date2 = np.timedelta64(np.datetime64('today') - np.datetime64('1969-12-31'), 's').astype(int)
     date1 = date2 - 86400 * 365 * 5
-    # date1 = 0
     
     url = "https://br.financas.yahoo.com/quote/{}/history?period1={}&period2={}&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true"
     
     # formatando o url da página que será acessada
     url = url.format(ticker, date1, date2)
     
-    # Instância do navegador
+    # instância do navegador
     opt = webdriver.ChromeOptions()
     opt.headless = True #não mostrar a ação em andamento 
-    ser = Service(r'C:\Program Files (x86)\Google\Chrome\Application\97.0.4692.99\chromedriver.exe')
+    ser = Service(r'browser\chromedriver.exe')
     driver = webdriver.Chrome(service=ser, options=opt)
     
     driver.get(url)
@@ -50,7 +50,6 @@ def get_stock_data(ticker):
     
     # posição do inicial do scroll
     last_height = driver.execute_script("return document.body.scrollHeight")
-    print("last_height: {}".format(last_height))
     
     while (True):
         # posiciona o scroll no final da página
@@ -60,15 +59,16 @@ def get_stock_data(ticker):
         time.sleep(1)
     
         # atualiza a posição do scroll 
-        new_height = driver.execute_script("return document.documentElement.scrollHeight")
-        # print("new_height: {}".format(new_height))
+        new_height = driver.execute_script(
+            "return document.documentElement.scrollHeight"
+        )
         
         # verifica se houve movimento da página 
         if (new_height == last_height):
             # termina o loop
             break
         else:
-            # atualiza o último valor 
+            # atualiza o último valor da posição do scroll 
             last_height = new_height         
     
     element = driver.find_element(By.TAG_NAME, 'table')
@@ -108,7 +108,9 @@ def get_stock_data(ticker):
     
     # laço para substituir os pontos por vírgulas 
     for coluna in df_data_stocks.columns[1:6]:
-        df_data_stocks[coluna] = df_data_stocks[coluna].apply(lambda x: float(x.replace(".","").replace(",",".")) if x != '-' else 0)
+        df_data_stocks[coluna] = df_data_stocks[coluna].apply(lambda x: float(x.replace(".","").replace(",",".")) if x != '-' else np.nan)
+    
+    df_data_stocks.dropna(axis=0, how='any', inplace=True)
     
     # dicionário para auxiliar na correção das datas
     dicio = {"jan.": "01",
@@ -194,26 +196,30 @@ def get_parameter(ticker, flag):
             indice += 26
         
         # Criando o dataframe
-        df_param = pd.DataFrame(rows_separate, columns = ['Código do fundo', 
-                                                          'Setor', 'Preço atual',
-                                                          'Liquidez','Dividendo',
-                                                          'Dividend Yield','DY 3M',
-                                                          'DY 6M','DY 12M',
-                                                          'DY 3M media',
-                                                          'DY 6M media',
-                                                          'DY 12M media',
-                                                          'DY ANO',
-                                                          'Variação Preço',
-                                                          'Rentab. Período',
-                                                          'Retab. Acum.',
-                                                          'Patrimônio Líq.',
-                                                          'VPA','P/VPA',
-                                                          'DY PATR.',
-                                                          'Varia. Patri.',
-                                                          'Rentab. Patr.', 
-                                                          'Vacância Física',
-                                                          'Vacância Financeira',
-                                                          'Quantidade de ativos'])
+        df_param = pd.DataFrame(
+            rows_separate,
+            columns = ['Código do fundo', 
+                       'Setor', 'Preço atual',
+                       'Liquidez','Dividendo',
+                       'Dividend Yield','DY 3M',
+                       'DY 6M','DY 12M',
+                       'DY 3M media',
+                       'DY 6M media',
+                       'DY 12M media',
+                       'DY ANO',
+                       'Variação Preço',
+                       'Rentab. Período',
+                       'Retab. Acum.',
+                       'Patrimônio Líq.',
+                       'VPA','P/VPA',
+                       'DY PATR.',
+                       'Varia. Patri.',
+                       'Rentab. Patr.', 
+                       'Vacância Física',
+                       'Vacância Financeira',
+                       'Quantidade de ativos'
+            ]
+        )   
         
         df_param.index = df_param["Código do fundo"]
         df_param.drop(labels='Código do fundo', axis=1, inplace=True)
@@ -257,9 +263,11 @@ def get_asset_field(ticker, flag, df_fiis, df_stocks):
 def get_list_asset_field(type_filter, df_fiis, df_stocks): 
     # Verifica o tipo de ativo selecionado
     if type_filter == "FIIs":
-        return pd.unique(df_fiis['Setor']).tolist()
+        aux = pd.unique(df_fiis['Setor'].sort_values()).tolist()
+        return aux
     elif type_filter == "Ações":
-        return pd.unique(df_stocks['Setor']).tolist()
+        aux = pd.unique(df_stocks['Setor'].sort_values()).tolist()
+        return aux 
     else:
         return ["Todos"]
 
@@ -269,20 +277,19 @@ def define_options(asset_type, asset_field, df_fiis, df_stocks):
     list_stocks = []
     list_fiis = []
     
-    # Verificando se é ação ou fundo
+    # verificando se é ação ou fundo
     if asset_type == "FIIs":
         if asset_field != "Todos":
-            # caso seja um grupo específico
+            # caso seja um setor específico
             df_temp = df_fiis.groupby(by='Setor')['Sigla'].get_group(asset_field)
         else:
             # caso sejam desejados todos os grupos
             df_temp = df_fiis['Sigla']
         list_fiis = df_temp.values.tolist()
     elif asset_type == "Ações":
-        # Verificando o grupo do ativo
+        # verificando o setor da ação
         if asset_field != "Todos":
             # caso seja um grupo específico
-            # df_temp = df_stocks[df_stocks['Setor'] == asset_field][['Empresa', 'Sigla']]
             df_temp = df_stocks.groupby(by='Setor')[['Empresa','Sigla']].get_group(asset_field)
         else:
             # caso sejam desejados todos os grupos
@@ -297,26 +304,37 @@ def define_options(asset_type, asset_field, df_fiis, df_stocks):
     options = [e[1] + " (" + e[0] + ")" for e in list_stocks] if bool(list_stocks) else [] 
     # concatenando a lista de fiis se ela não for nula
     options = options + list_fiis if bool(list_fiis) else options 
-    options.sort() #ordenando tudo
+    options.sort() #ordenando alfabeticamente
     
     return options
 
-# Iniciando o Dash
+# Iniciando o Dash com layout longo
 st.set_page_config(layout="wide")
 
 # Fazendo a leitura dos tickers das ações 
-columns = ['Empresa', 'Sigla','Setor']
-df_stocks = pd.DataFrame(read_csv_file("empresas_listadas.csv"), columns=columns) 
+columns = ['Empresa', 'Sigla', 'Setor']
+df_stocks = pd.DataFrame(
+    read_csv_file("data\\csvs\\empresas_listadas.csv"),
+    columns=columns
+) 
 
 # Fazendo a leitura dos tickers dos fundos imobiliários 
-columns = ['Sigla','Setor']
-df_fiis = pd.DataFrame(read_csv_file("fundos_listados.csv"), columns=columns) 
+columns = ['Sigla', 'Setor']
+df_fiis = pd.DataFrame(
+    read_csv_file("data\\csvs\\fundos_listados.csv"), 
+    columns=columns
+) 
 
 # Ajustando as listas com os nomes das empresas e fundos
 list_stocks = df_stocks[['Empresa','Sigla']].values.tolist()
 list_fiis = df_fiis['Sigla'].values.tolist()
 
-st.title('Dashboard Financeiro')
+# Dividindo a parte superior em 3 colunas
+col1, col2, col3 = st.columns([0.2,1,3])
+col1.metric(" ", "", "") #apenas para ocupar espaço
+image = Image.open("data\\imgs\\stock-market.png")
+col2.image(image, width=128) #inserindo logo
+col3.title('Dashboard Financeiro') #título
 
 # Mudando a CSS da barra lateral e dos labels dos objetos selectbox
 st.markdown(
@@ -337,6 +355,12 @@ st.markdown(
     }
     [class="block-container css-18e3th9 egzxvld2"] {
         padding-top:40px !important;
+    }
+    [class="css-sygy1k e1fqkh3o1"] {
+        padding-top:25px !important;
+    }
+    [class="css-e370rw e19lei0e0"] {
+        visibility: hidden !important;
     }
     </style>
     """,
@@ -391,11 +415,17 @@ except Exception:
 
 # Escrevendo o range de datas para o slider
 try:
-    # Pega o índice do dataframe e transforma em uma lista para opções
+    # pega o índice do dataframe e transforma em uma lista para opções
     options = [e.strftime(' %d/%m/%Y ') for e in dataframe.index.to_list()[::-1]]
     sldr_enabl = False
+    # caso o dataframe venha com apenas uma linha
+    if options[0] == options[-1]: 
+        # cria um dataframe com um ano de datas e transforma em umaa lista
+        options = pd.date_range(end = np.datetime64('today'), periods = 365)
+        options = list(map(lambda x: x.strftime(' %d/%m/%Y '), options))
+        sldr_enabl = True
 except Exception:
-    # Cria um dataframe com um ano de datas e transforma em umaa lista
+    # cria um dataframe com um ano de datas e transforma em umaa lista
     options = pd.date_range(end = np.datetime64('today'), periods = 365)
     options = list(map(lambda x: x.strftime(' %d/%m/%Y '), options))
     sldr_enabl = True
@@ -409,39 +439,46 @@ date_init, date_fin = st.select_slider('Selecione a data de pesquisa',
 
 # Insere o gráfico na página e o indicador de preço 
 try:
+    # divide uma coluna para o gráfico e outra para o indicador
     col1, col2 = st.columns([3,1])
-    # Nome da empresa selecionada pelo ticker
     
-    # Datas selecionadas, convertidas de string (%d/%m/%Y) para datetime64 (%Y-%m-%d)
+    # datas selecionadas, convertidas de string (%d/%m/%Y) para datetime64 (%Y-%m-%d)
     date_init = np.datetime64("-".join(date_init.replace('/','-').strip().split('-')[::-1])) 
     date_fin = np.datetime64("-".join(date_fin.replace('/','-').strip().split('-')[::-1]))
     
-    # Selecionando o dataframe
+    # selecionando o dataframe
     dataframe_aux = dataframe[(dataframe.index >= date_init) &
                               (dataframe.index <= date_fin)].copy()
     
-    # Monta a figura
-    fig = go.Figure(data=[go.Candlestick(x=dataframe_aux.index,
-                    open=dataframe_aux['Abrir'], high=dataframe_aux['Alto'],
-                    low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*'])],
-                    layout_yaxis_range=[0, dataframe_aux['Alto'].max()])
+    fig = go.Figure(
+        data=[go.Candlestick(
+            x=dataframe_aux.index,
+            open=dataframe_aux['Abrir'], high=dataframe_aux['Alto'],
+            low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*']
+        )],
+        layout_yaxis_range=[0, dataframe_aux['Alto'].max()]
+    )
     
     fig.update_layout(xaxis_rangeslider_visible=False) #retira a tabela abaixo
-    # fig.update_layout(width=1000, height=500) 
-    col1.plotly_chart(fig, use_container_width=True) #desenha o gráfico na página
+    
+    # desenha o gráfico na página
+    col1.plotly_chart(fig, use_container_width=True) 
     
     stock_price = "R$ " + str(dataframe_aux['Fechamento ajustado**'][0]).replace('.', ',')
-    delta_price = str(round(100 * ((dataframe_aux['Fechamento ajustado**'][0] - dataframe_aux['Fechamento ajustado**'][-1]) \
-                             / dataframe_aux['Fechamento ajustado**'][-1]), 2)).replace('.', ',') + "%" 
+    delta_price = str(
+        round(
+            100 * ((dataframe_aux['Fechamento ajustado**'][0]     \
+                    - dataframe_aux['Fechamento ajustado**'][-1]) \
+                    / dataframe_aux['Fechamento ajustado**'][-1]),
+            2
+        )
+    ).replace('.', ',') + "%" 
     
     col2.metric(" ", "", "") #espaço
     col2.metric("", "", "")  #espaço
     col2.metric(" ", "", "") #espaço
     col2.metric("", "", "")  #espaço
     col2.metric("Preço:", stock_price, delta_price)
-    # col2.metric(" ", "", "") #espaço
-    # col2.metric("", "", "")  #espaço
-    # col2.metric("Teste:", "R$ 20,00", "-2%")
 except Exception:
     st.write("Não foi possível exibir o gráfico do ativo")
 
