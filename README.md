@@ -9,11 +9,10 @@
 
 > Status do projeto: Concluído :ballot_box_with_check:
 
-### :bookmark_tabs: Tópicos
+### Tópicos
 
 :small_blue_diamond: [Descrição do projeto](#descrição-do-projeto) <br/>
 :small_blue_diamond: [Funcionalidades da aplicação](#funcionalidades-da-aplicação) <br/>
-:small_blue_diamond: [Tecnologias utilizadas](#tecnologias-utilizadas) <br/>
 :small_blue_diamond: [Acesso ao projeto e utilização](#acesso-ao-projeto-e-utilização) <br/>
 :small_blue_diamond: [Referências](#referências) <br/>
 :small_blue_diamond: [Autores](#autores) <br/>
@@ -21,9 +20,31 @@
 
 ### Descrição do projeto
 
-### Funcionalidades da aplicação
+O projeto consiste em uma ferramenta para visualização do histórico de cotação de ações e fundos de investimento imobiliários (FIIs) e os seus principais indicadores. A coleta dos dados é feita no momento da pesquisa a partir da raspagem de diversos sites, esses dados são pré-processados e utilizados para montar um dashboard interativo.
 
-### Tecnologias utilizadas
+#### Objetivo:
+
+O objetivo do projeto foi concentrar a visualização dos dados em um único lugar, retirando a necessidade da abertura de vários sites para a pesquisa das informações referentes a um determinado ativo.
+  
+#### Ferramentas utilizadas:
+
+A principal ferramenta utilizada foi a linguagem de programação **Python**, versão 3.8, tanto para a extração dos dados, quanto para a apresentação das informações. Mas é importante destacar as bibliotecas essenciais para o desenvolvimento e utilização, são elas:
+
+* Streamlit
+* Plotly
+* Selenium
+* Pandas
+* Requests
+* Beautifulsoup
+* Numpy
+
+#### Sites utilizados:
+
+* [Yahoo](https://br.financas.yahoo.com): foi utilizado para a obteção dos históricos das cotações das ações e dos fundos imobiliários;
+* [Status Invest](https://statusinvest.com.br): foi utilizado para a obtenção do indicadores fundamentalistas das ações;
+* [Funds Explorer](https://www.fundsexplorer.com.br): foi utilizado para a obtenção dos indicadores referentes aos FIIs.
+
+### Funcionalidades da aplicação
 
 ### Acesso ao projeto e utilização
 
