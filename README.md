@@ -56,3 +56,7 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 | :---: | :---: |
 
 ### Licença
+
+[MIT License](LICENSE) (MIT)
+
+Copyright :copyright: 2022 - web_scraping_fin_training
