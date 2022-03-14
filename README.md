@@ -11,16 +11,14 @@
 
 ### :bookmark_tabs: Tópicos
 
-<p>
-  :small_blue_diamond: <a href=(#descrição-do-projeto)> Descrição do projeto </a> <br/>
-  :small_blue_diamond: <a href=(#funcionalidades-da-aplicação)> Funcionalidades da aplicação </a> <br/>
-  :small_blue_diamond: <a href=(#tecnologias-utilizadas)> Tecnologias utilizadas </a> <br/>
-  :small_blue_diamond: <a href=(#acesso-ao-projeto-e-utilização)> Acesso ao projeto e utilização </a> <br/>
-  :small_blue_diamond: <a href=(#referências)> Referências </a> <br/>
-  :small_blue_diamond: <a href=(#autores)> Autores </a> <br/>
-  :small_blue_diamond: <a href=(#licença)> Licença </a> <br/>
-</p>
-  
+:small_blue_diamond: [Descrição do projeto](#descrição-do-projeto) <br/>
+:small_blue_diamond: [Funcionalidades da aplicação](#funcionalidades-da-aplicação) <br/>
+:small_blue_diamond: [Tecnologias utilizadas](#tecnologias-utilizadas) <br/>
+:small_blue_diamond: [Acesso ao projeto e utilização](#acesso-ao-projeto-e-utilização) <br/>
+:small_blue_diamond: [Referências](#referências) <br/>
+:small_blue_diamond: [Autores](#autores) <br/>
+:small_blue_diamond: [Licença](#licença) <br/>
+
 ### Descrição do projeto
 
 ### Funcionalidades da aplicação
