@@ -42,7 +42,8 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 
 * [Yahoo](https://br.financas.yahoo.com): foi utilizado para a obteção dos históricos das cotações das ações e dos fundos imobiliários;
 * [Status Invest](https://statusinvest.com.br): foi utilizado para a obtenção do indicadores fundamentalistas das ações;
-* [Funds Explorer](https://www.fundsexplorer.com.br): foi utilizado para a obtenção dos indicadores referentes aos FIIs.
+* [Funds Explorer](https://www.fundsexplorer.com.br): foi utilizado para a obtenção dos indicadores referentes aos FIIs;
+* [Infomoney](https://www.infomoney.com.br): foi utilizado para a obtenção as ações e os FIIs listados na B3.
 
 ### Funcionalidades da aplicação
 
