@@ -1,6 +1,6 @@
 <h1 align="center"> Raspagem de dados e dashboards no mercado financeiro </h1>
 
-![web-scrapinh](https://user-images.githubusercontent.com/87511811/158238792-c221f46f-80bf-4ac2-8170-6d107c7105a5.png)
+![foto-de-capa](https://user-images.githubusercontent.com/87511811/158238792-c221f46f-80bf-4ac2-8170-6d107c7105a5.png)
 
 ##
 ![Licença](https://img.shields.io/github/license/lucasfrasca/web_scraping_fin_training?style=for-the-badge)
@@ -48,7 +48,11 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 
 ### Organização: pastas e arquivos
 
+As pastas do projeto estão divididas conforme o esquema a seguir:
 
+![pasta_e_arquivos](https://user-images.githubusercontent.com/87511811/158501667-98a188d4-ea6a-46df-8e4c-ae2aaf51d7c5.png)
+
+A pasta **browser** contém o driver do Google Chrome, utilizado pelo Selenium para interagir com as páginas web. Na pasta **data** se encontram os arquivos que são lidos durante a execução do aplicativo, dados estáticos para a decoração e elaboração das listas de pesquisa. O arquivo **app.py** contém todo o código destinado à elaboração do dashboard utilizando o Streamlit. O arquivo de Jupyter Notebook **Web_scraping_financial_data.ipynb** contém um resumo dos objetivos do projeto, todos os testes de raspagem que foram realizados e todas as análises.
 
 ### Funcionalidades da aplicação
 
