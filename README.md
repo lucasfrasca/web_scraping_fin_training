@@ -43,7 +43,7 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 
 ### Sites utilizados:
 
-* [Yahoo](https://br.financas.yahoo.com): foi utilizado para a obteção dos históricos das cotações das ações e dos fundos imobiliários;
+* [Yahoo](https://br.financas.yahoo.com): foi utilizado para a obtenção dos históricos das cotações das ações e dos fundos imobiliários;
 * [Status Invest](https://statusinvest.com.br): foi utilizado para a obtenção do indicadores fundamentalistas das ações;
 * [Funds Explorer](https://www.fundsexplorer.com.br): foi utilizado para a obtenção dos indicadores referentes aos FIIs;
 * [Infomoney](https://www.infomoney.com.br): foi utilizado para a obtenção das ações e dos FIIs listados na B3.
@@ -63,9 +63,9 @@ Com o aplicativo é possível:
 * Visualizar o histórico das cotações de um determinado ativo em gráfico de vela;
 * Filtrar o intervalo de tempo desejado para realizar a análise;
 * Ver a cotação do dia e comparar em percentual com a cotação da última data selecionada;
-* Visualizar os pricipais indicadores fundamentalistas do ativo.
+* Visualizar os principais indicadores fundamentalistas do ativo.
 
-Na imagem a seguir é possível observar no retângulo vermelho com número 1 os três filtros laterais, os quais são utilizados para selecionar os ativos a serem pesquisados e restringir a lista de ativos para um determinado tipo e setor. No retângulo de número 2 encontra-se o objeto que faz a seleção do intevalo de tempo em que o gráfico do ativo será gerado, esse intervalo será de no máximo 5 anos começando no dia da pesquisa, esse período foi escolhido em virtude do tempo de raspagem.
+Na imagem a seguir é possível observar no retângulo vermelho com número 1 os três filtros laterais, os quais são utilizados para selecionar os ativos a serem pesquisados e restringir a lista de ativos para um determinado tipo e setor. No retângulo de número 2 encontra-se o objeto que faz a seleção do intervalo de tempo em que o gráfico do ativo será gerado, esse intervalo será de no máximo 5 anos começando no dia da pesquisa, esse período foi escolhido em virtude do tempo de raspagem.
 
 ![app_visao_geral_1](https://user-images.githubusercontent.com/87511811/158503864-666f7f3f-9a7f-43d8-bbff-74eb1fd1a810.png)
 
@@ -81,7 +81,7 @@ O dashboard possui como elementos de análise um gráfico de vela delimitado pel
 
 ### Acesso ao projeto e utilização
 
-Para acessar o projeto é bem simples, basta clonar o repósitório a partir do seu computador.
+Para acessar o projeto é bem simples, basta clonar o repositório a partir do seu computador.
 * No bash escreva: **git clone https://github.com/lucasfrasca/web_scraping_fin_training.git**
 
 Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py** de dentro do diretório do arquivo **app.py**, se for preciso use o comando **cd** acompanhado do caminho do arquivo para mudar de diretório, a imagem abaixo ilustra o procedimento.
@@ -92,7 +92,7 @@ Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py
 
 Como plano de melhoria e aprendizado pretende-se:
 * Integrar os meios de raspagem com um banco de dados;
-* Criar processo para a tualização diária dos dados;
+* Criar processo para a atualização diária dos dados;
 * Disponibilizar o dashboard em produção, para que o usuário não precise ter contato com o código.
 
 ## Referências
