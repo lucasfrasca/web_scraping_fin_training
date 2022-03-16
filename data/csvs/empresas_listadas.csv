@@ -22,7 +22,7 @@ ALFA HOLDING,RPAD5,Financeiro
 ALFA HOLDING,RPAD6,Financeiro
 ALFA INVEST,BRIV3,Financeiro
 ALFA INVEST,BRIV4,Financeiro
-ALIANSCE,ALSC3,Financeiro e Outros
+ALIANSCE,ALSC3,Financeiro
 ALIANSCSONAE,ALSO3,Financeiro
 ALIPERTI,APTI3,Bens Industriais
 ALIPERTI,APTI4,Bens Industriais
@@ -114,8 +114,8 @@ CEA MODAS,CEAB3,Consumo Cíclico
 CEB,CEBR3,Energia E Saneamento
 CEB,CEBR5,Energia E Saneamento
 CEB,CEBR6,Energia E Saneamento
-CEDRO,CEDO3,Consumo Não Cíclico
-CEDRO,CEDO4,Consumo Não Cíclico
+CEDRO,CEDO3,Consumo não Cíclico
+CEDRO,CEDO4,Consumo não Cíclico
 CEEE-D,CEED3,Energia E Saneamento
 CEEE-D,CEED4,Energia E Saneamento
 CEEE-T,EEEL3,Energia E Saneamento
@@ -164,8 +164,8 @@ COSAN LOG,RLOG3,Bens Industriais
 COSERN,CSRN3,Energia E Saneamento
 COSERN,CSRN5,Energia E Saneamento
 COSERN,CSRN6,Energia E Saneamento
-COTEMINAS,CTNM3,Consumo Não Cíclico
-COTEMINAS,CTNM4,Consumo Não Cíclico
+COTEMINAS,CTNM3,Consumo não Cíclico
+COTEMINAS,CTNM4,Consumo não Cíclico
 CPFL ENERGIA,CPFE3,Energia E Saneamento
 CR2,CRDE3,Consumo Cíclico
 TRONOX,CRPG3,Petróleo. Gás e Biocombustíveis
@@ -224,8 +224,8 @@ EQUATORIAL PARA,EQPA7,Energia E Saneamento
 EQUATORIAL,EQTL3,Energia E Saneamento
 ESPACOLASER,ESPA3,Consumo Cíclico
 ESTAPAR,ALPK3,Bens Industriais
-ESTRELA,ESTR3,Bens Industriai
-ESTRELA,ESTR4,Bens Industriai
+ESTRELA,ESTR3,Bens Industriais
+ESTRELA,ESTR4,Bens Industriais
 ETERNIT,ETER3,Bens Industriais
 EUCATEX,EUCA3,Materiais Básicos
 EUCATEX,EUCA4,Materiais Básicos
@@ -257,8 +257,8 @@ GETNINJAS,NINJ3,Tecnologia da Informação
 GOL,GOLL4,Bens Industriais
 GP INVEST,GPIV33,Financeiro
 GPS,GGPS3,Bens Industriais
-GRAZZIOTIN,CGRA3,Consumo Não Cíclico
-GRAZZIOTIN,CGRA4,Consumo Não Cíclico
+GRAZZIOTIN,CGRA3,Consumo não Cíclico
+GRAZZIOTIN,CGRA4,Consumo não Cíclico
 GRENDENE,GRND3,Consumo Cíclico
 GRUPO MATEUS,GMAT3,Consumo não Cíclico
 GRUPO NATURA,NTCO3,Consumo não Cíclico
@@ -314,8 +314,8 @@ KLABIN S/A,KLBN3,Outros
 KLABIN S/A,KLBN4,Outros
 KORA SAUDE,KRSA3,Saúde
 LAVVI,LAVV3,Consumo Cíclico
-LE BISCUIT,LLBI3,Consumo Não Cíclico
-LE BISCUIT,LLBI4,Consumo Não Cíclico
+LE BISCUIT,LLBI3,Consumo não Cíclico
+LE BISCUIT,LLBI4,Consumo não Cíclico
 LIFEMED,LMED3,Saúde
 LIGHT S/A,LIGT3,Energia E Saneamento
 LOCALIZA,RENT3,Consumo Cíclico
@@ -323,10 +323,10 @@ LOCAMERICA,LCAM3,Consumo Cíclico
 LOCAWEB,LWSA3,Tecnologia da Informação
 LOG COM PROP,LOGG3,Outros
 LOG-IN,LOGN3,Outros
-LOJAS AMERIC,LAME3,Consumo Não Cíclico
-LOJAS AMERIC,LAME4,Consumo Não Cíclico
-LOJAS HERING,LHER3,Consumo Não Cíclico
-LOJAS HERING,LHER4,Consumo Não Cíclico
+LOJAS AMERIC,LAME3,Consumo não Cíclico
+LOJAS AMERIC,LAME4,Consumo não Cíclico
+LOJAS HERING,LHER3,Consumo não Cíclico
+LOJAS HERING,LHER4,Consumo não Cíclico
 LOJAS MARISA,AMAR3,Consumo Cíclico
 LOJAS RENNER,LREN3,Consumo Cíclico
 LOPES BRASIL,LPSB3,Financeiro
@@ -487,7 +487,7 @@ SYN PROP TEC,SYNE3,Financeiro
 TAESA,TAEE11,Energia E Saneamento
 TAESA,TAEE3,Energia E Saneamento
 TAESA,TAEE4,Energia E Saneamento
-TARPON INV,TRPN3,Financeiro e Outros
+TARPON INV,TRPN3,Financeiro
 TAURUS ARMAS,TASA3,Bens Industriais
 TAURUS ARMAS,TASA4,Bens Industriais
 TC,TRAD3,Tecnologia da Informação
