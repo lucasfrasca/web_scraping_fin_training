@@ -82,7 +82,11 @@ O dashboard possui como elementos de análise um gráfico de vela delimitado pel
 ### Acesso ao projeto e utilização
 
 Para acessar o projeto é bem simples, basta clonar o repósitório a partir do seu computador.
-* No bash escreva: **git clone**
+* No bash escreva: **git clone https://github.com/lucasfrasca/web_scraping_fin_training.git**
+
+Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py** de dentro do diretório do arquivo **app.py**, se for preciso use o comando **cd** acompanhado do caminho do arquivo para mudar de diretório, a imagem abaixo ilustra o procedimento.
+
+![prompt](https://user-images.githubusercontent.com/87511811/158658881-983a3b1c-efb3-4e1e-9503-2af7591d6b72.PNG)
 
 ### Planos futuros
 
