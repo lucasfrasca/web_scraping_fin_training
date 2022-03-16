@@ -20,7 +20,7 @@
 :small_blue_diamond: [Autores](#autores) <br/>
 :small_blue_diamond: [Licença](#licença) <br/>
 
-### Descrição do projeto
+## Descrição do projeto
 
 O projeto consiste em uma ferramenta para visualização do histórico de cotação de ações e fundos de investimento imobiliários (FIIs) e os seus principais indicadores. A coleta dos dados é feita no momento da pesquisa a partir da raspagem de diversos sites, esses dados são pré-processados e utilizados para montar um dashboard interativo.
 
@@ -90,7 +90,10 @@ Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py
 
 ### Planos futuros
 
-
+Como plano de melhoria e aprendizado pretende-se:
+* Integrar os meios de raspagem com um banco de dados;
+* Criar processo para a tualização diária dos dados;
+* Disponibilizar o dashboard em produção, para que o usuário não precise ter contato com o código.
 
 ### Referências
 
@@ -100,6 +103,7 @@ Estes são os sites de referência:
 * [Wigets](https://ipywidgets.readthedocs.io/en/latest/)
 * [Beautifulsoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 * [Requests](https://docs.python-requests.org/en/latest/)
+* [Flaticon](https://www.flaticon.com/authors/smashicons)
 
 ### Autores 
 
