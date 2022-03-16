@@ -52,7 +52,7 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 
 As pastas do projeto estão divididas conforme o esquema a seguir:
 
-![pasta_e_arquivos](https://user-images.githubusercontent.com/87511811/158501667-98a188d4-ea6a-46df-8e4c-ae2aaf51d7c5.png)
+![pasta_e_arquivos](https://user-images.githubusercontent.com/87511811/158664315-6a167140-65de-4250-9e88-6d404837edee.png)
 
 A pasta **browser** contém o driver do Google Chrome utilizado pelo Selenium para interagir com as páginas web. Na pasta **data** se encontram os arquivos que são lidos durante a execução do aplicativo, dados estáticos para a decoração e elaboração das listas de pesquisa. O arquivo **app.py** contém todo o código destinado à elaboração do dashboard utilizando o Streamlit. O arquivo de Jupyter Notebook **Web_scraping_financial_data.ipynb** contém um resumo dos objetivos do projeto, todos os testes de raspagem que foram realizados e todas as análises.
 
