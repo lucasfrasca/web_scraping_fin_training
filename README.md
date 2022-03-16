@@ -12,8 +12,10 @@
 ### Tópicos
 
 :small_blue_diamond: [Descrição do projeto](#descrição-do-projeto) <br/>
+:small_blue_diamond: [Organização: pastas e arquivos](#organização-pastas-e-arquivos) <br/>
 :small_blue_diamond: [Funcionalidades da aplicação](#funcionalidades-da-aplicação) <br/>
-:small_blue_diamond: [Acesso ao projeto e utilização](#acesso-ao-projeto-e-utilização) <br/>
+:small_blue_diamond: [Acesso ao projeto e utilização](#acesso-ao-projeto-e-utilização) <br/> 
+:small_blue_diamond: [Planos futuros](#planos-futuros) <br/>
 :small_blue_diamond: [Referências](#referências) <br/>
 :small_blue_diamond: [Autores](#autores) <br/>
 :small_blue_diamond: [Licença](#licença) <br/>
@@ -52,15 +54,42 @@ As pastas do projeto estão divididas conforme o esquema a seguir:
 
 ![pasta_e_arquivos](https://user-images.githubusercontent.com/87511811/158501667-98a188d4-ea6a-46df-8e4c-ae2aaf51d7c5.png)
 
-A pasta **browser** contém o driver do Google Chrome, utilizado pelo Selenium para interagir com as páginas web. Na pasta **data** se encontram os arquivos que são lidos durante a execução do aplicativo, dados estáticos para a decoração e elaboração das listas de pesquisa. O arquivo **app.py** contém todo o código destinado à elaboração do dashboard utilizando o Streamlit. O arquivo de Jupyter Notebook **Web_scraping_financial_data.ipynb** contém um resumo dos objetivos do projeto, todos os testes de raspagem que foram realizados e todas as análises.
+A pasta **browser** contém o driver do Google Chrome utilizado pelo Selenium para interagir com as páginas web. Na pasta **data** se encontram os arquivos que são lidos durante a execução do aplicativo, dados estáticos para a decoração e elaboração das listas de pesquisa. O arquivo **app.py** contém todo o código destinado à elaboração do dashboard utilizando o Streamlit. O arquivo de Jupyter Notebook **Web_scraping_financial_data.ipynb** contém um resumo dos objetivos do projeto, todos os testes de raspagem que foram realizados e todas as análises.
 
 ### Funcionalidades da aplicação
 
+Com o aplicativo é possível:
+* Analisar ações e fundos imobiliários selecionando pelos filtros de dados;
+* Visualizar o histórico das cotações de um determinado ativo em gráfico de vela;
+* Filtrar o intervalo de tempo desejado para realizar a análise;
+* Ver a cotação do dia e comparar em percentual com a cotação da última data selecionada;
+* Visualizar os pricipais indicadores fundamentalistas do ativo.
+
+Na imagem a seguir é possível observar no retângulo vermelho com número 1 os três filtros laterais, os quais são utilizados para selecionar os ativos a serem pesquisados e restringir a lista de ativos para um determinado tipo e setor. No retângulo de número 2 encontra-se o objeto que faz a seleção do intevalo de tempo em que o gráfico do ativo será gerado, esse intervalo será de no máximo 5 anos começando no dia da pesquisa, esse período foi escolhido em virtude do tempo de raspagem.
+
+![app_visao_geral_1](https://user-images.githubusercontent.com/87511811/158503864-666f7f3f-9a7f-43d8-bbff-74eb1fd1a810.png)
+
+A barra lateral possui três filtros, o filtro mais inferior seleciona por *default* o primeiro ativo da lista em ordem alfabética, ele apresentará o símbolo dos ativos e caso seja uma ação acompanhará o nome da empresa entre parênteses, então segue um filtro de tipo de ativo, em que o usuário pode afunilar a busca escolhendo entre ação ou FII, em seguida ele pode escolher o setor de atuação da empresa ou do fundo. A sequência de imagens abaixo mostra o funcionamento desses filtros de dados:   
+
+![side_bar](https://user-images.githubusercontent.com/87511811/158503896-9e0e8725-3200-4ef0-bb16-bf954e961f63.png)
+
+O dashboard possui como elementos de análise um gráfico de vela delimitado pelo retângulo 1, esse gráfico é totalmente interativo, podendo ser deslocado nos eixos, além de possuir *zoom* e etiqueta com informações dos dados. No retângulo de número 2 é possível ver a cotação do dia do ativo selecionado e logo abaixo a variação percentual em relação ao preço do primeiro dia da janela temporal de análise. O terceiro retângulo mostra alguns indicadores fundamentalistas para auxiliar na análise.  
+
+![app_visao_geral_2](https://user-images.githubusercontent.com/87511811/158503871-bec046eb-3377-4902-b807-48619c9c3c56.png)
 
 
 ### Acesso ao projeto e utilização
 
+### Planos futuros
+
 ### Referências
+
+Estes são os sites de referência:
+* [Pandas](https://pandas.pydata.org/docs/)
+* [Streamlit](https://docs.streamlit.io/)
+* [Wigets](https://ipywidgets.readthedocs.io/en/latest/)
+* [Beautifulsoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+* [Requests](https://docs.python-requests.org/en/latest/)
 
 ### Autores 
 
