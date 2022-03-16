@@ -9,7 +9,7 @@
 
 > Status do projeto: Concluído :ballot_box_with_check:
 
-### Tópicos
+## Tópicos
 
 :small_blue_diamond: [Descrição do projeto](#descrição-do-projeto) <br/>
 :small_blue_diamond: [Organização: pastas e arquivos](#organização-pastas-e-arquivos) <br/>
@@ -24,11 +24,11 @@
 
 O projeto consiste em uma ferramenta para visualização do histórico de cotação de ações e fundos de investimento imobiliários (FIIs) e os seus principais indicadores. A coleta dos dados é feita no momento da pesquisa a partir da raspagem de diversos sites, esses dados são pré-processados e utilizados para montar um dashboard interativo.
 
-#### Objetivo:
+### Objetivo:
 
 O objetivo do projeto foi concentrar a visualização dos dados em um único lugar, retirando a necessidade da abertura de vários sites para a pesquisa das informações referentes a um determinado ativo.
   
-#### Ferramentas utilizadas:
+### Ferramentas utilizadas:
 
 A principal ferramenta utilizada foi a linguagem de programação **Python**, versão 3.8, tanto para a extração dos dados, quanto para a apresentação das informações. Mas é importante destacar as bibliotecas essenciais para o desenvolvimento e utilização, são elas:
 
@@ -41,14 +41,14 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 * Numpy
 * Pandas
 
-#### Sites utilizados:
+### Sites utilizados:
 
 * [Yahoo](https://br.financas.yahoo.com): foi utilizado para a obteção dos históricos das cotações das ações e dos fundos imobiliários;
 * [Status Invest](https://statusinvest.com.br): foi utilizado para a obtenção do indicadores fundamentalistas das ações;
 * [Funds Explorer](https://www.fundsexplorer.com.br): foi utilizado para a obtenção dos indicadores referentes aos FIIs;
 * [Infomoney](https://www.infomoney.com.br): foi utilizado para a obtenção das ações e dos FIIs listados na B3.
 
-### Organização: pastas e arquivos
+## Organização: pastas e arquivos
 
 As pastas do projeto estão divididas conforme o esquema a seguir:
 
@@ -56,7 +56,7 @@ As pastas do projeto estão divididas conforme o esquema a seguir:
 
 A pasta **browser** contém o driver do Google Chrome utilizado pelo Selenium para interagir com as páginas web. Na pasta **data** se encontram os arquivos que são lidos durante a execução do aplicativo, dados estáticos para a decoração e elaboração das listas de pesquisa. O arquivo **app.py** contém todo o código destinado à elaboração do dashboard utilizando o Streamlit. O arquivo de Jupyter Notebook **Web_scraping_financial_data.ipynb** contém um resumo dos objetivos do projeto, todos os testes de raspagem que foram realizados e todas as análises.
 
-### Funcionalidades da aplicação
+## Funcionalidades da aplicação
 
 Com o aplicativo é possível:
 * Analisar ações e fundos imobiliários selecionando pelos filtros de dados;
@@ -88,14 +88,14 @@ Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py
 
 ![prompt](https://user-images.githubusercontent.com/87511811/158658881-983a3b1c-efb3-4e1e-9503-2af7591d6b72.PNG)
 
-### Planos futuros
+## Planos futuros
 
 Como plano de melhoria e aprendizado pretende-se:
 * Integrar os meios de raspagem com um banco de dados;
 * Criar processo para a tualização diária dos dados;
 * Disponibilizar o dashboard em produção, para que o usuário não precise ter contato com o código.
 
-### Referências
+## Referências
 
 Estes são os sites de referência:
 * [Pandas](https://pandas.pydata.org/docs/)
@@ -105,12 +105,12 @@ Estes são os sites de referência:
 * [Requests](https://docs.python-requests.org/en/latest/)
 * [Flaticon](https://www.flaticon.com/authors/smashicons)
 
-### Autores 
+## Autores 
 
 | [<img src="https://avatars.githubusercontent.com/u/87511811?v=4" width=115><br><sub> Lucas Frascarelli </sub>](https://github.com/lucasfrasca) | [<img src="https://avatars.githubusercontent.com/u/97852830?v=4" width=115><br><sub> Mateus V. Garcia </sub>](https://github.com/Mateus-V-Garcia) |
 | :---: | :---: |
 
-### Licença
+## Licença
 
 [MIT License](LICENSE) (MIT)
 
