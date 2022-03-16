@@ -33,10 +33,11 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 * Streamlit
 * Plotly
 * Selenium
-* Pandas
 * Requests
 * Beautifulsoup
+* time
 * Numpy
+* Pandas
 
 #### Sites utilizados:
 
@@ -45,7 +46,13 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 * [Funds Explorer](https://www.fundsexplorer.com.br): foi utilizado para a obtenção dos indicadores referentes aos FIIs;
 * [Infomoney](https://www.infomoney.com.br): foi utilizado para a obtenção das ações e dos FIIs listados na B3.
 
+### Organização: pastas e arquivos
+
+
+
 ### Funcionalidades da aplicação
+
+
 
 ### Acesso ao projeto e utilização
 
