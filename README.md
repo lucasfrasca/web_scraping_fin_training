@@ -77,10 +77,16 @@ O dashboard possui como elementos de análise um gráfico de vela delimitado pel
 
 ![app_visao_geral_2](https://user-images.githubusercontent.com/87511811/158503871-bec046eb-3377-4902-b807-48619c9c3c56.png)
 
+![acoes_gif](https://user-images.githubusercontent.com/87511811/158651217-9d6762b4-ab53-42b6-836f-9e433132114f.gif)
 
 ### Acesso ao projeto e utilização
 
+Para acessar o projeto é bem simples, basta clonar o repósitório a partir do seu computador.
+* No bash escreva: **git clone**
+
 ### Planos futuros
+
+
 
 ### Referências
 
