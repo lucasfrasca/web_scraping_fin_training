@@ -19,7 +19,6 @@ import plotly.graph_objects as go
 from PIL import Image
 import time
 
-
 def get_data(path, names):
     df = pd.read_csv(
         path,
@@ -29,7 +28,6 @@ def get_data(path, names):
     )
     
     return df
-
 
 def side_filters(df_stocks, df_fiis):
     ########################### Filtro de tipo de ativo ###########################
@@ -111,7 +109,6 @@ def dash_style():
     
     return None
 
-
 def header_content():
     # Dividindo a parte superior em 3 colunas
     col1, col2, col3 = st.columns([0.2,1,3])
@@ -120,7 +117,6 @@ def header_content():
     col2.image(image, width=128) #inserindo logo
     col3.title('Dashboard Financeiro') #título
     return None
-
 
 def candle_plot(dataframe, asset_field):
     st.header(ticker + ' - Setor ' + asset_field)
@@ -205,7 +201,6 @@ def candle_plot(dataframe, asset_field):
         st.write("Não foi possível exibir o gráfico do ativo")
 
     return None
-    
 
 def plot_metrics(param):
     try:
@@ -228,7 +223,6 @@ def plot_metrics(param):
         pass
     
     return None
-
 
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def get_stock_data(ticker):
@@ -466,14 +460,12 @@ def get_parameter(ticker, flag):
     
     return params
 
-
 def get_asset_field(ticker, flag, df_fiis, df_stocks): 
     # Verificando o tipo de ativo
     if flag:
         return df_fiis[df_fiis['Sigla'] == ticker]['Setor'].item()
     else:
         return df_stocks[df_stocks['Sigla'] == ticker]['Setor'].item()
-
 
 def get_list_asset_field(type_filter, df_fiis, df_stocks): 
     aux = []
@@ -484,7 +476,6 @@ def get_list_asset_field(type_filter, df_fiis, df_stocks):
         aux = pd.unique(df_stocks['Setor'].sort_values()).tolist()
     aux = ['Todos'] + aux
     return aux
-
 
 def define_asset_options(asset_type, asset_field, df_fiis, df_stocks):
     # Inicializando variáveis 
