@@ -91,7 +91,7 @@ Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py
 ## Planos futuros
 
 Como plano de melhoria e aprendizado pretende-se:
-* Integrar os meios de raspagem com um banco de dados;
+* Inserir os dados raspados em um banco de dados;
 * Criar processo para a atualização diária dos dados;
 * Disponibilizar o dashboard em produção, para que o usuário não precise ter contato com o código.
 
