@@ -4,15 +4,7 @@ Created on Mon Jan 31 17:06:42 2022
 
 @author: User
 """
-import streamlit as st
-import numpy as np
-import pandas as pd
-import csv
-import plotly.graph_objects as go
-from PIL import Image
-
-## Extraindo dados da web
-import time
+## Bibliotecas para a extração de dados
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -20,6 +12,222 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
+import streamlit as st
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+from PIL import Image
+import time
+
+
+def get_data(path, names):
+    df = pd.read_csv(
+        path,
+        header=0, 
+        names=names, 
+        encoding='latin-1', 
+    )
+    
+    return df
+
+
+def side_filters(df_stocks, df_fiis):
+    ########################### Filtro de tipo de ativo ###########################
+    type_filter = st.sidebar.selectbox(
+        "Selecione o tipo de ativo:",
+        options=('Todos',"Ações", "FIIs"),
+        index=0,
+        disabled=False
+    )
+
+    ########################## Filtro de setor de ativo ###########################
+    # avalia a condição do filtro de tipo para habilitar o filtro de setor
+    is_type_filter_off = True if type_filter == 'Todos' else False
+
+    options = get_list_asset_field(
+        type_filter,
+        df_fiis,
+        df_stocks
+    )
+
+    field_filter = st.sidebar.selectbox(
+        'Selecione o setor do ativo:',
+        options=options,
+        index=0,
+        disabled=is_type_filter_off
+    )
+
+    ########################## Filtro de seleção de ativo #########################
+    options = define_asset_options(
+        type_filter,
+        field_filter,
+        df_fiis,
+        df_stocks
+    )
+
+    ticker_filter = st.sidebar.selectbox(
+        "Selecione o símbolo do ativo:",
+         options=options, 
+    )
+
+    # corrigindo o string retornado pelo filtro de seleção de ativo
+    ticker = ticker_filter.split(" ")[0]
+    
+    return ticker
+
+def dash_style():
+    st.sidebar.header('Filtragem de dados')
+    
+    # Mudando a CSS da barra lateral e dos labels dos objetos selectbox
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
+            width: 300px;
+        }
+        [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
+            width: 300px;
+            margin-left: -300px;
+        }
+        [class="css-16huue1 effi0qh0"] {
+            font-size:18px !important;
+        }
+        [class="css-3snfz0 effi0qh0"] {
+            font-size:18px !important;
+        }
+        [class="block-container css-18e3th9 egzxvld2"] {
+            padding-top:40px !important;
+        }
+        [class="css-sygy1k e1fqkh3o1"] {
+            padding-top:25px !important;
+        }
+        [class="css-e370rw e19lei0e0"] {
+            visibility: hidden !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    return None
+
+
+def header_content():
+    # Dividindo a parte superior em 3 colunas
+    col1, col2, col3 = st.columns([0.2,1,3])
+    col1.metric(" ", "", "") #apenas para ocupar espaço
+    image = Image.open("data\\imgs\\stock-market.png")
+    col2.image(image, width=128) #inserindo logo
+    col3.title('Dashboard Financeiro') #título
+    return None
+
+
+def candle_plot(dataframe, asset_field):
+    st.header(ticker + ' - Setor ' + asset_field)
+
+    # Escrevendo o range de datas para o slider
+    try:
+        # pega o índice do dataframe e transforma em uma lista para opções
+        options = [e.strftime(' %d/%m/%Y ') for e in dataframe.index.to_list()[::-1]]
+        sldr_enabl = False
+        # caso o dataframe venha com apenas uma linha
+        if options[0] == options[-1]: 
+            # cria um dataframe com um ano de datas e transforma em umaa lista
+            options = pd.date_range(end = np.datetime64('today'), periods = 365)
+            options = list(map(lambda x: x.strftime(' %d/%m/%Y '), options))
+            sldr_enabl = True
+    except Exception:
+        # cria um dataframe com um ano de datas e transforma em umaa lista
+        options = pd.date_range(end = np.datetime64('today'), periods = 365)
+        options = list(map(lambda x: x.strftime(' %d/%m/%Y '), options))
+        sldr_enabl = True
+        
+    # Inserindo slider de tempo
+    date_init, date_fin = st.select_slider(
+        'Selecione a data de pesquisa',
+         options=options,
+         value=(
+             options[0],
+             options[-1]
+         ),
+         disabled=sldr_enabl
+    )
+
+    # Insere o gráfico na página e o indicador de preço 
+    try:
+        # uma coluna para o gráfico e outra para o indicador
+        col1, col2 = st.columns([3,1])
+        
+        # datas selecionadas, convertidas de string (%d/%m/%Y) para datetime64 (%Y-%m-%d)
+        date_init = np.datetime64("-".join(date_init.replace('/','-').strip().split('-')[::-1])) 
+        date_fin = np.datetime64("-".join(date_fin.replace('/','-').strip().split('-')[::-1]))
+        
+        # selecionando o dataframe
+        dataframe_aux = dataframe[(dataframe.index >= date_init) &
+                                  (dataframe.index <= date_fin)].copy()
+        
+        # cria o objeto gráfico
+        fig = go.Figure(
+            data=[go.Candlestick(
+                x=dataframe_aux.index,
+                open=dataframe_aux['Abrir'], high=dataframe_aux['Alto'],
+                low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*']
+            )],
+            layout_yaxis_range=[0, dataframe_aux['Alto'].max()]
+        )
+        
+        fig.update_layout(xaxis_rangeslider_visible=False) #retira a tabela abaixo
+        
+        # desenha o gráfico na página
+        col1.plotly_chart(fig, use_container_width=True) 
+        
+        stock_price = "R$ " + str(
+            round(
+                dataframe_aux['Fechamento ajustado**'][0],
+                2
+            )
+        ).replace('.', ',')
+        
+        delta_price = str(
+            round(((dataframe_aux['Fechamento ajustado**'][0] 
+                    - dataframe_aux['Fechamento ajustado**'][-1])\
+                    / dataframe_aux['Fechamento ajustado**'][-1]) * 100,
+                2
+            )
+        ).replace('.', ',') + "%" 
+        
+        col2.metric(" ", "", "") #espaço
+        col2.metric("", "", "")  #espaço
+        col2.metric(" ", "", "") #espaço
+        col2.metric("", "", "")  #espaço
+        col2.metric("Preço:", stock_price, delta_price)
+    except Exception:
+        st.write("Não foi possível exibir o gráfico do ativo")
+
+    return None
+    
+
+def plot_metrics(param):
+    try:
+        if not if_fund: 
+            col1, col2, col3, col4, col5 = st.columns(5)
+            col1.metric("ROE:", param["ROE"], "")
+            col2.metric("ROIC:", param["ROIC"], "")    
+            col3.metric("M. Líquida:", param["M. Líquida"], "")
+            col4.metric("CAGR:", param["CAGR Receitas 5 anos"], "")
+            col5.metric("P/L:", param["P/L"], "")
+        else:
+            col1, col2, col3, col4, col5 = st.columns(5)
+            col1.metric("DY 12 M:", param["DY 12 M"], "")    
+            col2.metric("Liquidez:", param['Liquidez'], "")
+            col3.metric("P/VPA:", param["P/VPA"], "")
+            col4.metric("Dividendo:", param["Dividendo"], "")
+            col5.metric("Magic Number:", param["Magic Number"], "")
+    except Exception:
+        print('Problema na exibição dos indicadores')
+        pass
+    
+    return None
 
 
 @st.cache(allow_output_mutation=True, show_spinner=False)
@@ -41,7 +249,6 @@ def get_stock_data(ticker):
     opt.headless = True #não mostrar a ação em andamento 
     ser = Service(r'browser\chromedriver.exe')
     driver = webdriver.Chrome(service=ser, options=opt)
-    
     driver.get(url)
     
     time.sleep(4)
@@ -96,20 +303,30 @@ def get_stock_data(ticker):
             linhas_tab.append(element.string)
             
     new_lista = list(filter(None, linhas_tab)) #retira os Nones se existirem
-    stock_data = list(zip(*[iter(new_lista)]*7)) #empacota em listas de 7 elementos 
+    stock_data = list(zip(*[iter(new_lista)] * 7)) #empacota em listas de 7 elementos 
     
     df_data_stocks = pd.DataFrame(stock_data[1:], columns=stock_data[0][0:7]) 
     
     # df_not_related = pd.DataFrame(tuplas_eventos, columns=['Data', 'Valor', 'Tipo'])
     
+    df_data_stocks = prepare_stock_data(df_data_stocks)
+    
+    return df_data_stocks
+
+def prepare_stock_data(df_data_stocks):
     # Tratando o DataFrame de preços de ações 
     # converte a última coluna para inteiro substituindo o ponto
     df_data_stocks["Volume"] = df_data_stocks['Volume'].apply(lambda x: int(x.replace(".","")) if x != "-" else x)
     
     # laço para substituir os pontos por vírgulas 
     for coluna in df_data_stocks.columns[1:6]:
-        df_data_stocks[coluna] = df_data_stocks[coluna].apply(lambda x: float(x.replace(".","").replace(",",".")) if x != '-' else np.nan)
+        df_data_stocks[coluna] = df_data_stocks[coluna].apply(
+            lambda x: float(
+                x.replace(".","").replace(",",".")
+            ) if x != '-' else np.nan
+        )
     
+    # retirando os NaN inseridos 
     df_data_stocks.dropna(axis=0, how='any', inplace=True)
     
     # dicionário para auxiliar na correção das datas
@@ -126,16 +343,26 @@ def get_stock_data(ticker):
              "nov.": "11",
              "dez.": "12"}
     
-    # ordenando cada data por Ano-mês-dia, substituindo o nome do mês pelo número correspondente e convertendo para datetime64
-    df_data_stocks["Data_Time"] = pd.to_datetime(df_data_stocks["Data"].apply(lambda x: x.split(' ')[0:6:2][::-1]).\
-                                                 apply(lambda x: "".join([x[0], dicio[x[1]], x[2]])), 
-                                                 format='%Y-%m-%d')
+    # ordenando cada data por Ano-mês-dia, substituindo o nome do mês pelo
+    # número correspondente e convertendo para datetime64
+    df_data_stocks["Data_Time"] = pd.to_datetime(
+        df_data_stocks["Data"].apply(
+            lambda x: x.split(' ')[0:6:2][::-1]
+        ).apply(
+            lambda x: "".join(
+                [x[0], 
+                dicio[x[1]],
+                x[2]]
+            )
+        ),
+        format='%Y-%m-%d'
+    )
     
     # rearanjando as colunas do dataframe
     cols = df_data_stocks.columns.tolist()
     cols = cols[-1:] + cols[:-1]
     df_data_stocks = df_data_stocks[cols]
-    df_data_stocks.index = df_data_stocks['Data_Time'] #faz o índice virar a coluna data_time
+    df_data_stocks.index = df_data_stocks['Data_Time'] #faz a coluna data_time de índice
     df_data_stocks.drop(labels='Data_Time', axis=1, inplace=True)
     
     return df_data_stocks
@@ -198,26 +425,27 @@ def get_parameter(ticker, flag):
         # Criando o dataframe
         df_param = pd.DataFrame(
             rows_separate,
-            columns = ['Código do fundo', 
-                       'Setor', 'Preço atual',
-                       'Liquidez','Dividendo',
-                       'Dividend Yield','DY 3M',
-                       'DY 6M','DY 12M',
-                       'DY 3M media',
-                       'DY 6M media',
-                       'DY 12M media',
-                       'DY ANO',
-                       'Variação Preço',
-                       'Rentab. Período',
-                       'Retab. Acum.',
-                       'Patrimônio Líq.',
-                       'VPA','P/VPA',
-                       'DY PATR.',
-                       'Varia. Patri.',
-                       'Rentab. Patr.', 
-                       'Vacância Física',
-                       'Vacância Financeira',
-                       'Quantidade de ativos'
+            columns = [
+                'Código do fundo', 
+                'Setor', 'Preço atual',
+                'Liquidez','Dividendo',
+                'Dividend Yield','DY 3M',
+                'DY 6M','DY 12M',
+                'DY 3M media',
+                'DY 6M media',
+                'DY 12M media',
+                'DY ANO',
+                'Variação Preço',
+                'Rentab. Período',
+                'Retab. Acum.',
+                'Patrimônio Líq.',
+                'VPA','P/VPA',
+                'DY PATR.',
+                'Varia. Patri.',
+                'Rentab. Patr.', 
+                'Rentab. Patr. Acc.',
+                'Vacância Física',
+                'Vacância Financeira'
             ]
         )   
         
@@ -228,6 +456,7 @@ def get_parameter(ticker, flag):
         params['FII'] = ticker
         params['Preço'] = df_param['Preço atual'][ticker]
         params['DY 12 M'] = df_param['DY 12M'][ticker]
+        params['Liquidez'] = df_param['Liquidez'][ticker]
         params['Vacância Financeira'] = df_param['Vacância Financeira'][ticker]
         params['P/VPA'] = df_param['P/VPA'][ticker] 
         params['Dividendo'] = df_param['Dividendo'][ticker]
@@ -237,21 +466,7 @@ def get_parameter(ticker, flag):
     
     return params
 
-@st.cache(allow_output_mutation=True, show_spinner=False)
-def read_csv_file(file_path):
-    output_list = []
-    
-    with open(file_path, mode='r', newline='\n') as csv_file:
-        # Cria o ponteiro para a escrita do arquivo
-        reader = csv.reader(csv_file)
-        
-        # Transfere as linhas para a lista
-        for line in reader:
-            output_list.append(line)
-    
-    return output_list
 
-@st.cache(allow_output_mutation=(True), show_spinner=False)
 def get_asset_field(ticker, flag, df_fiis, df_stocks): 
     # Verificando o tipo de ativo
     if flag:
@@ -259,20 +474,19 @@ def get_asset_field(ticker, flag, df_fiis, df_stocks):
     else:
         return df_stocks[df_stocks['Sigla'] == ticker]['Setor'].item()
 
-@st.cache(allow_output_mutation=(True), show_spinner=False)
+
 def get_list_asset_field(type_filter, df_fiis, df_stocks): 
+    aux = []
     # Verifica o tipo de ativo selecionado
     if type_filter == "FIIs":
         aux = pd.unique(df_fiis['Setor'].sort_values()).tolist()
-        return aux
-    elif type_filter == "Ações":
+    else: 
         aux = pd.unique(df_stocks['Setor'].sort_values()).tolist()
-        return aux 
-    else:
-        return ["Todos"]
+    aux = ['Todos'] + aux
+    return aux
 
-@st.cache(allow_output_mutation=(True), show_spinner=False)
-def define_options(asset_type, asset_field, df_fiis, df_stocks):
+
+def define_asset_options(asset_type, asset_field, df_fiis, df_stocks):
     # Inicializando variáveis 
     list_stocks = []
     list_fiis = []
@@ -311,202 +525,51 @@ def define_options(asset_type, asset_field, df_fiis, df_stocks):
 # Iniciando o Dash com layout longo
 st.set_page_config(layout="wide")
 
-# Fazendo a leitura dos tickers das ações 
-columns = ['Empresa', 'Sigla', 'Setor']
-df_stocks = pd.DataFrame(
-    read_csv_file("data\\csvs\\empresas_listadas.csv"),
-    columns=columns
-) 
-
-# Fazendo a leitura dos tickers dos fundos imobiliários 
-columns = ['Sigla', 'Setor']
-df_fiis = pd.DataFrame(
-    read_csv_file("data\\csvs\\fundos_listados.csv"), 
-    columns=columns
-) 
-
-# Ajustando as listas com os nomes das empresas e fundos
-list_stocks = df_stocks[['Empresa','Sigla']].values.tolist()
-list_fiis = df_fiis['Sigla'].values.tolist()
-
-# Dividindo a parte superior em 3 colunas
-col1, col2, col3 = st.columns([0.2,1,3])
-col1.metric(" ", "", "") #apenas para ocupar espaço
-image = Image.open("data\\imgs\\stock-market.png")
-col2.image(image, width=128) #inserindo logo
-col3.title('Dashboard Financeiro') #título
-
-# Mudando a CSS da barra lateral e dos labels dos objetos selectbox
-st.markdown(
-    """
-    <style>
-    [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
-        width: 300px;
-    }
-    [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
-        width: 300px;
-        margin-left: -300px;
-    }
-    [class="css-16huue1 effi0qh0"] {
-        font-size:18px !important;
-    }
-    [class="css-3snfz0 effi0qh0"] {
-        font-size:18px !important;
-    }
-    [class="block-container css-18e3th9 egzxvld2"] {
-        padding-top:40px !important;
-    }
-    [class="css-sygy1k e1fqkh3o1"] {
-        padding-top:25px !important;
-    }
-    [class="css-e370rw e19lei0e0"] {
-        visibility: hidden !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.sidebar.header('Filtragem de dados')
-
-########################### Filtro de tipo de ativo ###########################
-st.sidebar.selectbox("Selecione o tipo de ativo:",
-                     options=('Todos',"Ações", "FIIs"),
-                     key='type_filter',
-                     index=0,
-                     disabled=False)
-
-########################## Filtro de setor de ativo ###########################
-is_type_filter_off = True if st.session_state.type_filter =='Todos' else False
-options = ['Todos'] + get_list_asset_field(st.session_state.type_filter,
-                                           df_fiis,
-                                           df_stocks)
-
-st.sidebar.selectbox('Selecione o setor do ativo:',
-                      options=options,
-                      key='field_filter',
-                      index=0,
-                      disabled=is_type_filter_off)
-
-########################## Filtro de seleção de ativo #########################
-options = define_options(st.session_state.type_filter,
-                         st.session_state.field_filter,
-                         df_fiis,
-                         df_stocks)
-
-st.sidebar.selectbox("Selecione o símbolo do ativo:",
-                     options=options, 
-                     key='ticker_filter')
-
-# Corrigindo o string retornado pelo filtro de seleção 
-ticker = st.session_state.ticker_filter.split(" ")[0]
-
-# Flag para verificar se foi selecionada um fundo ou uma ação 
-if_fund = ticker in list_fiis 
-
-st.header(ticker + ' - Setor ' + get_asset_field(ticker, if_fund, df_fiis, df_stocks))
-
-# Pegando dados históricos do site do Yahoo
-try:
-    with st.spinner('Carregando dados. Aguarde, por favor!'):
-        dataframe = get_stock_data(ticker)
-except Exception:
-    print("Erro na raspagem do Yahoo")
-
-# Escrevendo o range de datas para o slider
-try:
-    # pega o índice do dataframe e transforma em uma lista para opções
-    options = [e.strftime(' %d/%m/%Y ') for e in dataframe.index.to_list()[::-1]]
-    sldr_enabl = False
-    # caso o dataframe venha com apenas uma linha
-    if options[0] == options[-1]: 
-        # cria um dataframe com um ano de datas e transforma em umaa lista
-        options = pd.date_range(end = np.datetime64('today'), periods = 365)
-        options = list(map(lambda x: x.strftime(' %d/%m/%Y '), options))
-        sldr_enabl = True
-except Exception:
-    # cria um dataframe com um ano de datas e transforma em umaa lista
-    options = pd.date_range(end = np.datetime64('today'), periods = 365)
-    options = list(map(lambda x: x.strftime(' %d/%m/%Y '), options))
-    sldr_enabl = True
-    
-# Inserindo slider de tempo
-date_init, date_fin = st.select_slider('Selecione a data de pesquisa',
-                                        options=options,
-                                        value=(options[0],
-                                               options[-1]),
-                                        disabled=sldr_enabl)
-
-# Insere o gráfico na página e o indicador de preço 
-try:
-    # divide uma coluna para o gráfico e outra para o indicador
-    col1, col2 = st.columns([3,1])
-    
-    # datas selecionadas, convertidas de string (%d/%m/%Y) para datetime64 (%Y-%m-%d)
-    date_init = np.datetime64("-".join(date_init.replace('/','-').strip().split('-')[::-1])) 
-    date_fin = np.datetime64("-".join(date_fin.replace('/','-').strip().split('-')[::-1]))
-    
-    # selecionando o dataframe
-    dataframe_aux = dataframe[(dataframe.index >= date_init) &
-                              (dataframe.index <= date_fin)].copy()
-    
-    fig = go.Figure(
-        data=[go.Candlestick(
-            x=dataframe_aux.index,
-            open=dataframe_aux['Abrir'], high=dataframe_aux['Alto'],
-            low=dataframe_aux['Baixo'], close=dataframe_aux['Fechamento*']
-        )],
-        layout_yaxis_range=[0, dataframe_aux['Alto'].max()]
+if __name__ == "__main__":
+    # leitura dos tickers das ações
+    df_stocks = get_data(
+        "data\\csvs\\empresas_listadas.csv",
+        ['Empresa', 'Sigla', 'Setor']
     )
     
-    fig.update_layout(xaxis_rangeslider_visible=False) #retira a tabela abaixo
-    
-    # desenha o gráfico na página
-    col1.plotly_chart(fig, use_container_width=True) 
-    
-    stock_price = "R$ " + str(dataframe_aux['Fechamento ajustado**'][0]).replace('.', ',')
-    delta_price = str(
-        round(
-            100 * ((dataframe_aux['Fechamento ajustado**'][0]     \
-                    - dataframe_aux['Fechamento ajustado**'][-1]) \
-                    / dataframe_aux['Fechamento ajustado**'][-1]),
-            2
-        )
-    ).replace('.', ',') + "%" 
-    
-    col2.metric(" ", "", "") #espaço
-    col2.metric("", "", "")  #espaço
-    col2.metric(" ", "", "") #espaço
-    col2.metric("", "", "")  #espaço
-    col2.metric("Preço:", stock_price, delta_price)
-except Exception:
-    st.write("Não foi possível exibir o gráfico do ativo")
+    # leitura dos tickers dos fundos imobiliários
+    df_fiis = get_data(
+        "data\\csvs\\fundos_listados.csv",
+        ['Sigla', 'Setor']
+    )
 
-try:
-    param = get_parameter(ticker, if_fund)
-except Exception:
-    param = {}
+    # lista com os nomes dos fundos
+    list_fiis = df_fiis['Sigla'].values.tolist()
 
-try:
-    if not if_fund: 
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.metric("ROE:", param["ROE"], "")
-        col2.metric("ROIC:", param["ROIC"], "")    
-        # col3.metric("Liquidez:", param["Liq. corrente"], "")
-        col3.metric("M. Líquida:", param["M. Líquida"], "")
-        col4.metric("CAGR:", param["CAGR Receitas 5 anos"], "")
-        col5.metric("P/L:", param["P/L"], "")
-    else:
-        print(param["DY 12 M"])
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.metric("DY 12 M:", param["DY 12 M"], "")    
-        col2.metric("Liquidez:", param["Vacância Financeira"], "")
-        col3.metric("P/VPA:", param["P/VPA"], "")
-        col4.metric("Dividendo:", param["Dividendo"], "")
-        col5.metric("Magic Number:", param["Magic Number"], "")
-except Exception:
-    print('Problema na exibição dos indicadores')
-    pass
+    # inicializando filtros laterais
+    dash_style()
+    ticker = side_filters(df_stocks, df_fiis)
+    
+    # flag para verificar se foi selecionada um fundo ou uma ação 
+    if_fund = ticker in list_fiis 
+
+    # raspando dados de cotação históricas do site do Yahoo
+    try:
+        with st.spinner('Carregando dados. Aguarde, por favor!'):
+            df_asset = get_stock_data(ticker)
+    except Exception:
+        df_asset = None
+        print("Erro na raspagem do Yahoo")
+    
+    # raspando os dados de indicadores fundamentalistas
+    try:
+        param = get_parameter(ticker, if_fund)
+    except Exception:
+        param = {}
+    
+    # carrega o conteúdo do cabeçalho
+    header_content()
+    
+    # carrega o conteúdo do gráfico
+    candle_plot(df_asset, get_asset_field(ticker, if_fund, df_fiis, df_stocks))
+
+    # carrega o conteúdo dos indicadores 
+    plot_metrics(param)
 
 
 
