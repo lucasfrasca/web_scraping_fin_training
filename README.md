@@ -41,6 +41,11 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 * Numpy
 * Pandas
 
+O código do projeto utiliza webdriver do Google Chrome para interagir com as péginas, portanto duas ferramentas fundamentais são: o navegador Google Chrome e o driver com a versão coincidente à versão do navegador, por exemplo:
+
+* Google [Chrome](https://www.google.com/intl/pt-BR/chrome/): Versão 99.0.4844.74 
+* Google [ChromeDriver](https://chromedriver.chromium.org/downloads): Versão 99.0.4844.51 
+
 ### Sites utilizados:
 
 * [Yahoo](https://br.financas.yahoo.com): foi utilizado para a obtenção dos históricos das cotações das ações e dos fundos imobiliários;
@@ -73,13 +78,15 @@ A barra lateral possui três filtros, o filtro mais inferior seleciona por *defa
 
 ![side_bar](https://user-images.githubusercontent.com/87511811/158503896-9e0e8725-3200-4ef0-bb16-bf954e961f63.png)
 
-O dashboard possui como elementos de análise um gráfico de vela delimitado pelo retângulo 1, esse gráfico é totalmente interativo, podendo ser deslocado nos eixos, além de possuir *zoom* e etiqueta com informações dos dados. No retângulo de número 2 é possível ver a cotação do dia do ativo selecionado e logo abaixo a variação percentual em relação ao preço do primeiro dia da janela temporal de análise. O terceiro retângulo mostra alguns indicadores fundamentalistas para auxiliar na análise.  
+O dashboard possui como elementos de análise um gráfico de vela delimitado pelo retângulo 1, esse gráfico é totalmente interativo, podendo ser deslocado nos eixos, além de possuir *zoom* e etiqueta com informações dos dados. No retângulo de número 2 é possível ver a cotação do dia do ativo selecionado e logo abaixo a variação percentual em relação ao preço do primeiro dia da janela temporal de análise. O terceiro retângulo mostra alguns indicadores fundamentalistas para auxiliar na análise. 
 
 ![app_visao_geral_2](https://user-images.githubusercontent.com/87511811/158503871-bec046eb-3377-4902-b807-48619c9c3c56.png)
 
 ![acoes_gif](https://user-images.githubusercontent.com/87511811/158651217-9d6762b4-ab53-42b6-836f-9e433132114f.gif)
 
-### Acesso ao projeto e utilização
+## Acesso ao projeto e utilização
+
+É bem simples obter as pastas do projeto e utilizá-lo, porém é importante se atentar a alguns requisitos.
 
 Para acessar o projeto é bem simples, basta clonar o repositório a partir do seu computador.
 * No bash escreva: **git clone https://github.com/lucasfrasca/web_scraping_fin_training.git**
@@ -87,6 +94,12 @@ Para acessar o projeto é bem simples, basta clonar o repositório a partir do s
 Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py** de dentro do diretório do arquivo **app.py**, se for preciso use o comando **cd** acompanhado do caminho do arquivo para mudar de diretório, a imagem abaixo ilustra o procedimento.
 
 ![prompt](https://user-images.githubusercontent.com/87511811/158658881-983a3b1c-efb3-4e1e-9503-2af7591d6b72.PNG)
+
+### Requisitos
+
+Possuir as bibliotecas citadas instaladas no computador, para isso pode-se utilizar o gerenciador de pacotes do Python o **pip** digitando no prompt o comando **pip install** somado com o nome da empresa, por exemplo: **pip install numpy** 
+
+É indispensável ter instalado no computardor o navegador Google Chrome e ter baixado o webdriver refente à versão do navegaor. 
 
 ## Planos futuros
 
