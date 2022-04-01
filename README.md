@@ -3,9 +3,9 @@
 ![foto-de-capa](https://user-images.githubusercontent.com/87511811/158238792-c221f46f-80bf-4ac2-8170-6d107c7105a5.png)
 
 ##
-![Licença](https://img.shields.io/github/license/lucasfrasca/web_scraping_fin_training?style=for-the-badge)
-![Lançamento](https://img.shields.io/github/release-date/lucasfrasca/web_scraping_fin_training?style=for-the-badge)
-![Versão Python](https://img.shields.io/github/pipenv/locked/python-version/lucasfrasca/web_scraping_fin_training?style=for-the-badge)
+![Licença](https://img.shields.io/github/license/lucasfrasca/web_scraping_fin_training?style=flat-square)
+![Languages](https://img.shields.io/github/languages/top/lucasfrasca/web_scraping_fin_training?style=flat-square)
+![LangCount](https://img.shields.io/github/languages/count/lucasfrasca/web_scraping_fin_training?style=flat-square)
 
 > Status do projeto: Concluído :ballot_box_with_check:
 
