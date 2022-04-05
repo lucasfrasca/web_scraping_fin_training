@@ -41,7 +41,7 @@ A principal ferramenta utilizada foi a linguagem de programação **Python**, ve
 * Numpy
 * Pandas
 
-O código do projeto utiliza webdriver do Google Chrome para interagir com as péginas, portanto duas ferramentas fundamentais são: o navegador Google Chrome e o driver com a versão coincidente à versão do navegador, por exemplo:
+O código do projeto utiliza webdriver do Google Chrome para interagir com as páginas, portanto duas ferramentas fundamentais são: o navegador Google Chrome e o driver com a versão coincidente à versão do navegador, por exemplo:
 
 * Google [Chrome](https://www.google.com/intl/pt-BR/chrome/): Versão 99.0.4844.74 
 * Google [ChromeDriver](https://chromedriver.chromium.org/downloads): Versão 99.0.4844.51 
@@ -70,15 +70,15 @@ Com o aplicativo é possível:
 * Ver a cotação do dia e comparar em percentual com a cotação da última data selecionada;
 * Visualizar os principais indicadores fundamentalistas do ativo.
 
-Na imagem a seguir é possível observar no retângulo vermelho com número 1 os três filtros laterais, os quais são utilizados para selecionar os ativos a serem pesquisados e restringir a lista de ativos para um determinado tipo e setor. No retângulo de número 2 encontra-se o objeto que faz a seleção do intervalo de tempo em que o gráfico do ativo será gerado, esse intervalo será de no máximo 5 anos começando no dia da pesquisa, esse período foi escolhido em virtude do tempo de raspagem.
+Na imagem a seguir é possível observar no retângulo vermelho com número 1 os três filtros laterais, os quais são utilizados para selecionar os ativos a serem pesquisados e restringir a lista de ativos para um determinado tipo e setor. No retângulo de número 2 encontra-se o objeto que faz a seleção do intervalo de tempo em que a cotação do ativo será mostrada. O intervalo de tempo desse gráfico será de no máximo 5 anos, terminando no dia da pesquisa, esse período foi escolhido em virtude do tempo de raspagem.
 
 ![app_visao_geral_1](https://user-images.githubusercontent.com/87511811/158503864-666f7f3f-9a7f-43d8-bbff-74eb1fd1a810.png)
 
-A barra lateral possui três filtros, o filtro mais inferior seleciona por *default* o primeiro ativo da lista em ordem alfabética, ele apresentará o símbolo dos ativos e caso seja uma ação acompanhará o nome da empresa entre parênteses, então segue um filtro de tipo de ativo, em que o usuário pode afunilar a busca escolhendo entre ação ou FII, em seguida ele pode escolher o setor de atuação da empresa ou do fundo. A sequência de imagens abaixo mostra o funcionamento desses filtros de dados:   
+A barra lateral possui três filtros: o filtro mais inferior apresentará o símbolo dos ativos selecionando por *default* o primeiro ativo da lista em ordem alfabética; então, na primeira posição, segue um filtro de tipo de ativo, em que o usuário pode afunilar a busca escolhendo entre ação ou FII; em seguida é possível escolher o setor de atuação da empresa ou do fundo, porém este filtro só estará disponível se um tipo de ativo for selecionado. A sequência de imagens abaixo mostra o funcionamento desses filtros de dados:   
 
 ![side_bar](https://user-images.githubusercontent.com/87511811/158503896-9e0e8725-3200-4ef0-bb16-bf954e961f63.png)
 
-O dashboard possui como elementos de análise um gráfico de vela delimitado pelo retângulo 1, esse gráfico é totalmente interativo, podendo ser deslocado nos eixos, além de possuir *zoom* e etiqueta com informações dos dados. No retângulo de número 2 é possível ver a cotação do dia do ativo selecionado e logo abaixo a variação percentual em relação ao preço do primeiro dia da janela temporal de análise. O terceiro retângulo mostra alguns indicadores fundamentalistas para auxiliar na análise. 
+O dashboard possui como elementos de análise um gráfico de vela delimitado pelo retângulo 1, sendo totalmente interativo, com deslocado nos eixos, *zoom* e etiqueta nos dados. No retângulo de número 2 é possível ver a cotação do dia e logo abaixo a variação percentual em relação ao preço do primeiro dia da janela temporal. O terceiro retângulo mostra alguns indicadores fundamentalistas para auxiliar na análise. 
 
 ![app_visao_geral_2](https://user-images.githubusercontent.com/87511811/158503871-bec046eb-3377-4902-b807-48619c9c3c56.png)
 
@@ -86,9 +86,9 @@ O dashboard possui como elementos de análise um gráfico de vela delimitado pel
 
 ## Acesso ao projeto e utilização
 
-É bem simples obter as pastas do projeto e utilizá-lo, porém é importante se atentar a alguns requisitos.
+É bem simples obter as pastas do projeto e utilizá-lo, porém é importante se atentar aos requisitos.
 
-Para acessar o projeto é bem simples, basta clonar o repositório a partir do seu computador.
+Para acessar o projeto basta clonar o repositório a partir do seu computador.
 * No bash escreva: **git clone https://github.com/lucasfrasca/web_scraping_fin_training.git**
 
 Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py** de dentro do diretório do arquivo **app.py**, se for preciso use o comando **cd** acompanhado do caminho do arquivo para mudar de diretório, a imagem abaixo ilustra o procedimento.
@@ -97,9 +97,9 @@ Para usar a aplicação abra o prompt e execute o comando **streamlit run app.py
 
 ### Requisitos
 
-Possuir as bibliotecas citadas instaladas no computador, para isso pode-se utilizar o gerenciador de pacotes do Python o **pip** digitando no prompt o comando **pip install** somado com o nome da empresa, por exemplo: **pip install numpy** 
+Possuir as bibliotecas citadas instaladas no computador. Para isso pode-se utilizar o gerenciador de pacotes do Python (**pip**), digitando no prompt o comando **pip install** acrescido do nome da biblioteca, por exemplo: **pip install numpy**. 
 
-É indispensável ter instalado no computardor o navegador Google Chrome e ter baixado o webdriver refente à versão do navegaor. 
+É indispensável ter instalado no computardor o navegador Google Chrome e ter baixado o webdriver refente à versão do navegador. 
 
 ## Planos futuros
 
