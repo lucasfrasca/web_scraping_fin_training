@@ -238,6 +238,8 @@ def get_stock_data(ticker):
     # formatando o url da página que será acessada
     url = url.format(ticker, date1, date2)
     
+    print(url)
+    
     # instância do navegador
     opt = webdriver.ChromeOptions()
     opt.headless = True #não mostrar a ação em andamento 
@@ -251,6 +253,7 @@ def get_stock_data(ticker):
     
     # posição do inicial do scroll
     last_height = driver.execute_script("return document.body.scrollHeight")
+    print(last_height)
     
     while (True):
         # posiciona o scroll no final da página
@@ -263,6 +266,8 @@ def get_stock_data(ticker):
         new_height = driver.execute_script(
             "return document.documentElement.scrollHeight"
         )
+        
+        print(new_height)
         
         # verifica se houve movimento da página 
         if (new_height == last_height):
